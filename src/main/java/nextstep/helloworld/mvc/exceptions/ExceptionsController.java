@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/exceptions")
 public class ExceptionsController {
@@ -22,7 +24,8 @@ public class ExceptionsController {
         throw new HelloException();
     }
 
-    public ResponseEntity<String> handle() {
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<String> handle(RuntimeException exception) {
         return ResponseEntity.badRequest().body("CustomException");
     }
 }
