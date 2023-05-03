@@ -2,9 +2,12 @@ package nextstep.helloworld.auth.ui;
 
 import nextstep.helloworld.auth.application.AuthService;
 import nextstep.helloworld.auth.application.AuthorizationException;
+import nextstep.helloworld.auth.dto.AuthInfo;
 import nextstep.helloworld.auth.dto.MemberResponse;
 import nextstep.helloworld.auth.dto.TokenRequest;
 import nextstep.helloworld.auth.dto.TokenResponse;
+import nextstep.helloworld.auth.infrastructure.AuthorizationExtractor;
+import nextstep.helloworld.auth.infrastructure.BasicAuthorizationExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthController {
     private static final String SESSION_KEY = "USER";
     private AuthService authService;
+    private AuthorizationExtractor<AuthInfo> basicAuth = new BasicAuthorizationExtractor();
 
 
     public AuthController(AuthService authService) {
@@ -106,7 +110,8 @@ public class AuthController {
     @GetMapping("/members/my")
     public ResponseEntity findMyInfo(HttpServletRequest request) {
         // TODO: authorization 헤더의 Basic 값을 추출하기
-        String email = "";
+        AuthInfo extractBasic = basicAuth.extract(request);
+        String email = extractBasic.getEmail();
         MemberResponse member = authService.findMember(email);
         return ResponseEntity.ok().body(member);
     }
